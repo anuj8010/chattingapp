@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <input type="text" id="anuj">
+    <button onclick="submit()">submit</button>
+    <p id="para"></p>
+
+     <script>
+    const ws = new WebSocket('ws://localhost:8081');
+
+    ws.onopen = () => {
+      console.log('Connected to WebSocket server');
+      ws.send('Hello Server!');
+    };
+
+    ws.onmessage = async(event) => {
+        let data=await event.data.text()
+      console.log(`Message from server: ${data}`);
+      document.getElementById("para").innerHTML+=data
+    };
+
+    ws.onclose = () => {
+      console.log('Disconnected from WebSocket server');
+    };
+    const submit=()=>{
+        let d=document.getElementById("anuj").value
+        ws.send(d)
+    }
+  </script>
+</body>
+</html>

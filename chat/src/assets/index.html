@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Real-Time Chat</title>
+</head>
+<body>
+  <h1>WebSocket Chat</h1>
+  <ul id="messages"></ul>
+  <input id="message" type="text" placeholder="Type a message">
+  <button id="send">Send</button>
+
+  <script>
+    const socket = new WebSocket('ws://localhost:8080');
+
+    // When the connection is established
+    socket.addEventListener('open', () => {
+      console.log('Connected to WebSocket server');
+    });
+
+    // When a message is received from the server
+    socket.addEventListener('message', async (event) => {
+      let message;
+      if (event.data instanceof Blob) {
+        message = await event.data.text();
+      } else {
+        message = event.data;
+      }
+
+      console.log('Message from server:', message);
+      const messages = document.getElementById('messages');
+      const messageItem = document.createElement('li');
+      messageItem.textContent = `Message: ${message}`;
+      messages.appendChild(messageItem);
+    });
+
+    // Handle the send button click
+    document.getElementById('send').addEventListener('click', () => {
+      const messageInput = document.getElementById('message');
+      const message = messageInput.value;
+      if (message) {
+        socket.send(message);
+        messageInput.value = ''; // Clear the input field
+      }
+    });
+
+    // Handle connection close
+    socket.addEventListener('close', () => {
+      console.log('Disconnected from WebSocket server');
+    });
+
+    // Handle errors
+    socket.addEventListener('error', (error) => {
+      console.error('WebSocket error:', error);
+    });
+  </script>
+</body>
+</html>
